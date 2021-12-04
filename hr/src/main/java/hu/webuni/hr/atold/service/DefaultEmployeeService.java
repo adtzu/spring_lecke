@@ -8,8 +8,8 @@ import hu.webuni.hr.atold.model.Employee;
 @Service
 public class DefaultEmployeeService implements EmployeeService {
 	
-	@Value("hr.payraise.default.percent")
-	private int defaultPercent;
+	@Value("${hr.payraise.default.percent}")
+	private int defaultPercent = 0;
 
 	@Override
 	public int getPayRaisePercent(Employee employee) {

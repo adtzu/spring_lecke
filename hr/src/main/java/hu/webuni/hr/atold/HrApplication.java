@@ -5,11 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-
 import hu.webuni.hr.atold.model.Employee;
-import hu.webuni.hr.atold.service.DefaultEmployeeService;
-import hu.webuni.hr.atold.service.EmployeeService;
 import hu.webuni.hr.atold.service.SalaryService;
 
 @SpringBootApplication
