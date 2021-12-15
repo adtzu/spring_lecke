@@ -15,4 +15,10 @@ public class SalaryService {
 	public void setEmployeePayRaise(Employee employee) {
 		employee.setSalary((int)(employee.getSalary() / 100.0 * (100 + employeeService.getPayRaisePercent(employee))));
 	}
+	
+	public int getEmployeePayraisePercent(Employee employee) {
+		
+		return employeeService.getPayRaisePercent(employee);
+	}
+	
 }
