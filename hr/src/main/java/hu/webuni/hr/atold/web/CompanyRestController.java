@@ -104,9 +104,7 @@ public class CompanyRestController {
 			return ResponseEntity.notFound().build();
 		}
 		
-		List<EmployeeDto> currentEmployees = companies.get(id).getEmployeeList();
-		currentEmployees.remove(employeeId);
-		companies.get(id).setEmployeeList(currentEmployees);
+		companies.get(id).getEmployeeList().removeIf(e -> (e.getId() == employeeId));
 		
 		return ResponseEntity.ok(companies.get(id));		
 	}
