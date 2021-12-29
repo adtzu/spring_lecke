@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import hu.webuni.hr.atold.dto.EmployeeDto;
+import hu.webuni.hr.atold.mapper.EmployeeMapper;
 import hu.webuni.hr.atold.model.Employee;
 import hu.webuni.hr.atold.service.EmployeeService;
 import hu.webuni.hr.atold.service.SalaryService;
@@ -30,18 +33,17 @@ public class EmployeeRestController {
 	@Autowired
 	SalaryService salaryService;
 	
-	private Map<Long, EmployeeDto> employees = new HashMap<>();
+	@Autowired
+	EmployeeMapper employeeMapper;
 	
-	{
-		employees.put(1L, new EmployeeDto(1, "Teszt Elek", "CEO", 900000, LocalDateTime.parse("2010-01-02T08:00")));
-		employees.put(2L, new EmployeeDto(2, "Kandisz Nóra", "Titkárnő", 250000, LocalDateTime.parse("2010-03-16T08:00")));
-	}
+	@Autowired
+	EmployeeService employeeServcie;
+	
 	
 	@GetMapping
 	public Collection<EmployeeDto> getAll() {
 		
-		return employees.values();
-		
+		return employeeMapper.employeeDtoListToEmployeeList(employeeServcie.getEmployeeList());
 	}
 	
 	@GetMapping("/{id}")
@@ -72,7 +74,7 @@ public class EmployeeRestController {
 	
 	
 	@PostMapping
-	public EmployeeDto createEmployee(@RequestBody EmployeeDto employeeDto) {
+	public EmployeeDto createEmployee(@RequestBody @Valid EmployeeDto employeeDto) {
 		
 		employees.put(employeeDto.getId(), employeeDto);
 		return employeeDto;
@@ -80,7 +82,7 @@ public class EmployeeRestController {
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<EmployeeDto> modifyEmployee(@RequestBody EmployeeDto employeeDto, @PathVariable Long id) {
+	public ResponseEntity<EmployeeDto> modifyEmployee(@RequestBody @Valid EmployeeDto employeeDto, @PathVariable Long id) {
 		
 		if(employees.containsKey(id))
 		{

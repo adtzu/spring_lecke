@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import hu.webuni.hr.atold.model.Employee;
 
 @Service
-public class DefaultEmployeeService implements EmployeeService {
+public class DefaultEmployeeService extends EmployeeService {
 	
 	@Value("${hr.payraise.default.percent}")
 	private int defaultPercent = 0;

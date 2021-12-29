@@ -2,16 +2,27 @@ package hu.webuni.hr.atold.dto;
 
 import java.time.LocalDateTime;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
+import javax.validation.constraints.Positive;
+
 import org.springframework.format.annotation.DateTimeFormat;
 
 public class EmployeeDto {
 	
 	private long id;
+	
+	@NotNull
 	private String name;
+	
+	@NotNull
 	private String position;
+	
+	@Positive
 	private int salary;
 	
 	@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+	@Past
 	private LocalDateTime enterance;
 	
 	public EmployeeDto(long id, String name, String position, int salary, LocalDateTime enterance) {

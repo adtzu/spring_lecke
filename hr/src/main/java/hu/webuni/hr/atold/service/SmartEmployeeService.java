@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import hu.webuni.hr.atold.model.Employee;
 
 @Service
-public class SmartEmployeeService implements EmployeeService {
+public class SmartEmployeeService extends EmployeeService {
 	
 	@Value("${hr.payraise.special.first.limit}")
 	private int firstLimit;
