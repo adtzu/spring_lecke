@@ -3,13 +3,8 @@ package hu.webuni.hr.atold.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import hu.webuni.hr.atold.dto.EmployeeDto;
-
-@Service
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Company {
 	
@@ -18,7 +13,12 @@ public class Company {
 	private String address;
 	private List<Employee> employeeList = new ArrayList<>();
 	
+	public Company() {
+		
+	}
+	
 	public Company(String registrationNumber, String name, String address, List<Employee> employeeList) {
+		super();
 		this.registrationNumber = registrationNumber;
 		this.name = name;
 		this.address = address;

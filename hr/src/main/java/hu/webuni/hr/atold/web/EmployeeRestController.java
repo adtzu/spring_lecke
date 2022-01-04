@@ -1,11 +1,6 @@
 package hu.webuni.hr.atold.web;
 
-import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,20 +44,22 @@ public class EmployeeRestController {
 	@GetMapping("/{id}")
 	public ResponseEntity<EmployeeDto> getEmployeeById(@PathVariable long id) {
 		
-		if(employees.containsKey(id))
+		EmployeeDto employee = employeeMapper.employeeToDto(employeeServcie.getEmployee(id));
+		
+		if(employee.equals(null))
 		{
-			return ResponseEntity.ok(employees.get(id));
+			return ResponseEntity.notFound().build();
 		}
 		else
 		{
-			return ResponseEntity.notFound().build();
+			return ResponseEntity.ok(employee);
 		}
 	}
 	
 	@GetMapping("/salaryFilter")
 	public ResponseEntity<Collection<EmployeeDto>> getEmployeesBySalary(@RequestParam(name="salary") int salary) {
 		
-		Collection<EmployeeDto> emp = employees.entrySet().stream().filter(a -> a.getValue().getSalary() > salary).collect(Collectors.toMap(a -> a.getKey(), a -> a.getValue())).values();
+		Collection<EmployeeDto> emp = employeeMapper.employeeDtoListToEmployeeList(employeeServcie.salaryFiltered(salary));
 		
 		if(emp.isEmpty())
 		{
@@ -76,31 +73,29 @@ public class EmployeeRestController {
 	@PostMapping
 	public EmployeeDto createEmployee(@RequestBody @Valid EmployeeDto employeeDto) {
 		
-		employees.put(employeeDto.getId(), employeeDto);
-		return employeeDto;
-		
+		return employeeMapper.employeeToDto(employeeServcie.addNewEmployee(employeeMapper.dtoToEmployee(employeeDto)));
 	}
 	
 	@PutMapping("/{id}")
 	public ResponseEntity<EmployeeDto> modifyEmployee(@RequestBody @Valid EmployeeDto employeeDto, @PathVariable Long id) {
 		
-		if(employees.containsKey(id))
+		employeeDto.setId(id);
+		EmployeeDto employee = employeeMapper.employeeToDto(employeeServcie.addNewEmployee(employeeMapper.dtoToEmployee(employeeDto)));
+		
+		if(employee.equals(null))
 		{
 			return ResponseEntity.notFound().build();
 		}
-		
-		employeeDto.setId(id);
-		employees.put(id, employeeDto);
-		
-		return ResponseEntity.ok(employeeDto);
-		
+		else
+		{
+			return ResponseEntity.ok(employee);
+		}
 	}
 	
 	@DeleteMapping("/{id}")
 	public void deleteEmployee(@PathVariable Long id) {
 		
-		employees.remove(id);
-		
+		employeeServcie.removeEmployee(id);		
 	}
 	
 	@GetMapping("/payrisePercent")

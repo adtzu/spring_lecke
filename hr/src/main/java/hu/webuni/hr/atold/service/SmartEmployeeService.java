@@ -4,11 +4,8 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
 import hu.webuni.hr.atold.model.Employee;
 
-@Service
 public class SmartEmployeeService extends EmployeeService {
 	
 	@Value("${hr.payraise.special.first.limit}")

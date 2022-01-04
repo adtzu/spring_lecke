@@ -5,8 +5,6 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import hu.webuni.hr.atold.model.Employee;
-
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class CompanyDto {
 	

@@ -6,11 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import hu.webuni.hr.atold.dto.CompanyDto;
-import hu.webuni.hr.atold.dto.EmployeeDto;
 import hu.webuni.hr.atold.model.Company;
 import hu.webuni.hr.atold.model.Employee;
 
