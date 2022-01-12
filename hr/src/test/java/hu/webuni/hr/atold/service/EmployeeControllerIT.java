@@ -37,6 +37,21 @@ public class EmployeeControllerIT {
 	}
 	
 	@Test
+	void newInvalidEmployee() throws Exception {
+		
+		EmployeeDto emp = new EmployeeDto(51, "", "", 30000, LocalDateTime.parse("2022-01-03T08:00:00"));
+		
+		
+		List<EmployeeDto> employeesBefore = getEmployees();
+		createInvalidEmployee(emp);
+		List<EmployeeDto> employeesAfter = getEmployees();
+		
+		assertThat(!employeesBefore.contains(emp));
+		assertThat(!employeesAfter.contains(emp));
+		
+	}
+	
+	@Test
 	void overwriteEmployee() throws Exception {
 		
 		EmployeeDto emp = new EmployeeDto(1, "Integrációs Imi", "Gyakornok", 30000, LocalDateTime.parse("2022-01-03T08:00:00"));
@@ -53,9 +68,29 @@ public class EmployeeControllerIT {
 		
 	}
 	
+	@Test
+	void overwriteWithInvalidEmployee() throws Exception {
+		
+		EmployeeDto emp = new EmployeeDto(1, "", "", 30000, LocalDateTime.parse("2022-01-03T08:00:00"));
+		
+		List<EmployeeDto> employeesBefore = getEmployees();
+		overwriteExistingWithInvalidEmployee(emp);
+		
+		assertThat(!employeesBefore.contains(emp));
+		
+	}
 	
-	
-	
+	private void createInvalidEmployee(EmployeeDto newEmployee) {
+			
+		webTestClient
+			.post()
+			.uri(BASE_URI)
+			.bodyValue(newEmployee)
+			.exchange()
+			.expectStatus()
+			.isBadRequest();	
+			
+	}
 
 	private void createNewEmployee(EmployeeDto newEmployee) {
 		
@@ -81,6 +116,17 @@ public class EmployeeControllerIT {
 					.expectBody(EmployeeDto.class)
 					.returnResult()
 					.getResponseBody();
+	}
+	
+	private void overwriteExistingWithInvalidEmployee(EmployeeDto newEmployee) {
+		
+		webTestClient
+			.put()
+			.uri(BASE_URI + "/" + newEmployee.getId())
+			.bodyValue(newEmployee)
+			.exchange()
+			.expectStatus()
+			.isBadRequest();
 	}
 
 	private List<EmployeeDto> getEmployees() {

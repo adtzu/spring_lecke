@@ -2,6 +2,7 @@ package hu.webuni.hr.atold.dto;
 
 import java.time.LocalDateTime;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Positive;
@@ -12,10 +13,10 @@ public class EmployeeDto {
 	
 	private long id;
 	
-	@NotNull
+	@NotEmpty
 	private String name;
 	
-	@NotNull
+	@NotEmpty
 	private String position;
 	
 	@Positive
