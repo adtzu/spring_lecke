@@ -2,7 +2,6 @@ package hu.webuni.hr.atold.mapper;
 
 import java.util.Collection;
 import java.util.List;
-
 import org.mapstruct.Mapper;
 
 import hu.webuni.hr.atold.dto.EmployeeDto;

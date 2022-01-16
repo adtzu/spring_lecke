@@ -1,6 +1,9 @@
 package hu.webuni.hr.atold.web;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Optional;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,17 +45,16 @@ public class EmployeeRestController {
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<EmployeeDto> getEmployeeById(@PathVariable long id) {
+	public EmployeeDto getEmployeeById(@PathVariable long id) {
 		
-		EmployeeDto employee = employeeMapper.employeeToDto(employeeServcie.getEmployee(id));
-		
-		if(employee.equals(null))
+		Optional<Employee> emp = employeeServcie.getEmployee(id);
+		if(emp.isPresent())
 		{
-			return ResponseEntity.notFound().build();
+			return employeeMapper.employeeToDto(emp.get());
 		}
 		else
 		{
-			return ResponseEntity.ok(employee);
+			return null;
 		}
 	}
 	
@@ -69,6 +71,23 @@ public class EmployeeRestController {
 		return ResponseEntity.ok(emp);
 	}
 	
+	@GetMapping("/position/{position}")
+	public Collection<EmployeeDto> getEmployeesByPosition(@PathVariable String position) {
+		
+		return employeeMapper.employeeDtoListToEmployeeList(employeeServcie.getEmployeesByPosition(position));
+	}
+	
+	@GetMapping("/name/{name}")
+	public Collection<EmployeeDto> getEmployeesByName(@PathVariable String name) {
+		
+		return employeeMapper.employeeDtoListToEmployeeList(employeeServcie.getEmployeesByName(name));
+	}
+	
+	@GetMapping("/enterance/start/{start}/end/{end}")
+	public Collection<EmployeeDto> getEmployeesByEnterance(@PathVariable LocalDateTime start, @PathVariable LocalDateTime end) {
+		
+		return employeeMapper.employeeDtoListToEmployeeList(employeeServcie.getEmployeesByEnteranceDate(start, end));
+	}
 	
 	@PostMapping
 	public EmployeeDto createEmployee(@RequestBody @Valid EmployeeDto employeeDto) {

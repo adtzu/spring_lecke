@@ -2,58 +2,61 @@ package hu.webuni.hr.atold.service;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
-
+import java.util.List;
+import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import hu.webuni.hr.atold.model.Employee;
+import hu.webuni.hr.atold.repository.EmployeeRepository;
 
 @Service
 public abstract class EmployeeService {
 	
-	private Map<Long, Employee> employees = new HashMap<>();
+	@Autowired
+	EmployeeRepository employeRepository;
 	
-	{
-		employees.put(1L, new Employee(1, "Teszt Elek", "CEO", 900000, LocalDateTime.parse("2010-01-02T08:00")));
-		employees.put(2L, new Employee(2, "Kandisz Nóra", "Titkárnő", 250000, LocalDateTime.parse("2010-03-16T08:00")));
-	}
 	
 	public abstract int getPayRaisePercent(Employee employee);
 	
 	public Collection<Employee> getEmployeeList() {
 		
-		return employees.values(); 
+		return employeRepository.findAll();
 	}
 	
-	public Employee getEmployee(long id) {
+	public Optional<Employee> getEmployee(long id) {
 		
-		if(employees.containsKey(id))
-		{
-			return employees.get(id); 
-		}
-		else
-		{
-			return null;
-		}
+		return employeRepository.findById(id);
 	}
 	
-	public Collection<Employee> salaryFiltered(int salary) {
+	public List<Employee> salaryFiltered(int salary) {
 		
-		Collection<Employee> emp = employees.entrySet().stream().filter(a -> a.getValue().getSalary() > salary).collect(Collectors.toMap(a -> a.getKey(), a -> a.getValue())).values();
-		return emp;		
+		return employeRepository.findBySalaryGreaterThanEqual(salary);	
 	}
 	
 	public Employee addNewEmployee(Employee emp) {
 		
-		employees.put(emp.getId(), emp);
-		return emp;
+		return employeRepository.save(emp);
 	}
 	
 	public void removeEmployee(long id) {
 		
-		employees.remove(id);
+		employeRepository.deleteById(id);
+	}
+	
+	public List<Employee> getEmployeesByPosition(String position) {
+		
+		return employeRepository.findByPosition(position);
+	}
+	
+	public List<Employee> getEmployeesByName(String name) {
+		
+		return employeRepository.findByNameStartingWithIgnoreCase(name);
+	}
+	
+	public List<Employee> getEmployeesByEnteranceDate(LocalDateTime start, LocalDateTime end) {
+		
+		return employeRepository.findByEnteranceBetween(start, end);
 	}
 
 }

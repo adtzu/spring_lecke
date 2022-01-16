@@ -2,11 +2,19 @@ package hu.webuni.hr.atold.model;
 
 import java.time.LocalDateTime;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
 import org.springframework.format.annotation.DateTimeFormat;
 
+@Entity
 public class Employee {
 	
+	@Id
+	@GeneratedValue
 	private long id;
+	
 	private String name;
 	private String position;
 	private int salary;
