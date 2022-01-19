@@ -5,9 +5,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import org.springdoc.core.converters.models.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import hu.webuni.hr.atold.model.Employee;
@@ -52,11 +52,11 @@ public abstract class EmployeeService {
 		return employeRepository.findByPosition(position);
 	}
 	
-	/*public Page<Employee> getEmployeesByPosition(String position, Pageable page) {
+	public Page<Employee> getEmployeesByPosition(String position, Pageable page) {
 		
 		Page<Employee> p = employeRepository.findByPosition(position, page);
 		return p;
-	}*/
+	}
 	
 	public List<Employee> getEmployeesByName(String name) {
 		

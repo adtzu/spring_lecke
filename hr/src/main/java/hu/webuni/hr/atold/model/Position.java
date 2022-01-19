@@ -23,7 +23,9 @@ public class Position {
 	private int minVage;
 
 	
-	
+	public Position() {
+		
+	}
 	
 	public Position(String name, int minVage) {
 

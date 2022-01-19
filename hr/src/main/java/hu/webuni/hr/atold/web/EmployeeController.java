@@ -20,7 +20,7 @@ public class EmployeeController {
 	Position pos = new Position("vezérigazgató", 500000);
 	
 	{
-		employeesList.add(new Employee("Teszt Elek", pos, 700000, LocalDateTime.parse("2011-02-10T09:00:00"), null));
+		employeesList.add(new Employee("Teszt Elek", 700000, LocalDateTime.parse("2011-02-10T09:00:00"), null));
 	}
 	
 	@GetMapping("/")

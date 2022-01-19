@@ -33,10 +33,9 @@ public class Employee {
 		
 	}
 
-	public Employee(String name, Position position, int salary, LocalDateTime enterance, Company company) {
+	public Employee(String name, int salary, LocalDateTime enterance, Company company) {
 
 		this.name = name;
-		this.position = position;
 		this.salary = salary;
 		this.enterance = enterance;
 		this.company = company;

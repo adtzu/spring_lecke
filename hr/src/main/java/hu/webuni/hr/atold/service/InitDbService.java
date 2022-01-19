@@ -44,7 +44,8 @@ public class InitDbService {
 		positionRepository.save(position);
 		
 		Company comp = new Company("1234qwe", "Tesztelek és társa Kft.", "Teszt város teszt utca 1/b", null);
-		Employee emp = new Employee("Teszt Elek", position, 1000, LocalDateTime.parse("2021-11-29T08:00:00"), null);
+		Employee emp = new Employee("Teszt Elek", 1000, LocalDateTime.parse("2021-11-29T08:00:00"), null);
+		emp.setPosition(position);
 		
 		comp.addEmployee(emp);
 		comp.setCompanyForm(form);
