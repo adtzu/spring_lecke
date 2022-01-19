@@ -5,13 +5,18 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import hu.webuni.hr.atold.model.CompanyForm;
+
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class CompanyDto {
+	
+	private Long id;
 	
 	private String registrationNumber;
 	private String name;
 	private String address;
 	private List<EmployeeDto> employeeList = new ArrayList<>();
+	private CompanyForm companyForm;
 	
 	public CompanyDto(String registrationNumber, String name, String address, List<EmployeeDto> employeeList) {
 		this.registrationNumber = registrationNumber;
@@ -50,5 +55,21 @@ public class CompanyDto {
 
 	public void setEmployeeList(List<EmployeeDto> employeeList) {
 		this.employeeList = employeeList;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public CompanyForm getCompanyForm() {
+		return companyForm;
+	}
+
+	public void setCompanyForm(CompanyForm companyForm) {
+		this.companyForm = companyForm;
 	}
 }

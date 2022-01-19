@@ -10,14 +10,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import hu.webuni.hr.atold.model.Employee;
+import hu.webuni.hr.atold.model.Position;
 
 @Controller
 public class EmployeeController {
 	
 	private List<Employee> employeesList = new ArrayList<>();
 	
+	Position pos = new Position("vezérigazgató", 500000);
+	
 	{
-		employeesList.add(new Employee(0, "Teszt Elek", "vezérigazgató", 700000, LocalDateTime.parse("2011-02-10T09:00:00")));
+		employeesList.add(new Employee("Teszt Elek", pos, 700000, LocalDateTime.parse("2011-02-10T09:00:00"), null));
 	}
 	
 	@GetMapping("/")

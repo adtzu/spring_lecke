@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -16,24 +17,29 @@ public class Employee {
 	private long id;
 	
 	private String name;
-	private String position;
+	
+	@ManyToOne
+	private Position position;
 	private int salary;
 	
 	@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
 	private LocalDateTime enterance;
+	
+	@ManyToOne
+	private Company company;
 	
 	
 	public Employee() {
 		
 	}
 
-	public Employee(long id, String name, String position, int salary, LocalDateTime enterance) {
+	public Employee(String name, Position position, int salary, LocalDateTime enterance, Company company) {
 
-		this.id = id;
 		this.name = name;
 		this.position = position;
 		this.salary = salary;
 		this.enterance = enterance;
+		this.company = company;
 	}
 	
 	public long getId() {
@@ -48,10 +54,10 @@ public class Employee {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getPosition() {
+	public Position getPosition() {
 		return position;
 	}
-	public void setPosition(String position) {
+	public void setPosition(Position position) {
 		this.position = position;
 	}
 	public int getSalary() {
@@ -65,6 +71,14 @@ public class Employee {
 	}
 	public void setEnterance(LocalDateTime enterance) {
 		this.enterance = enterance;
+	}
+
+	public Company getCompany() {
+		return company;
+	}
+
+	public void setCompany(Company company) {
+		this.company = company;
 	}
 	
 	

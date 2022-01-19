@@ -2,6 +2,9 @@ package hu.webuni.hr.atold.repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import org.springdoc.core.converters.models.Pageable;
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import hu.webuni.hr.atold.model.Employee;
@@ -11,6 +14,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 	List<Employee> findBySalaryGreaterThanEqual(int salary);
 	
 	List<Employee> findByPosition(String position);
+	
+	//Page<Employee> findByPosition(String position, Pageable page);
 	
 	List<Employee> findByNameStartingWithIgnoreCase(String name);
 	

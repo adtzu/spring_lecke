@@ -39,11 +39,11 @@ public class CompanyRestController {
 		
 		if(full.equals("true"))
 		{
-			return companyMapper.companiesToCompaiesDto(companyServcie.getAllComanies()); 
+			return companyMapper.companiesToCompaniesDto(companyServcie.getAllCompanies()); 
 		}
 		else
 		{
-			return companyMapper.companiesToCompaiesDto(companyServcie.getAllCompaniesWithoutEmployees());
+			return companyMapper.companiesToCompaniesDtoWithoutEmployees(companyServcie.getAllCompaniesWithoutEmployees());
 		}
 	}
 	
@@ -60,6 +60,26 @@ public class CompanyRestController {
 			return ResponseEntity.ok(company);
 		}
 	}
+	
+	@GetMapping("/hasHihgerSalary")
+	public Collection<CompanyDto> employeeHasHigherSalaryThan(@RequestParam(defaultValue = "0") int salary) {
+		
+		return companyMapper.companiesToCompaniesDtoWithoutEmployees(companyServcie.employeeHasHigherSalaryThan(salary));
+	}
+	
+	@GetMapping("/hasMoreEmployeeThan")
+	public Collection<CompanyDto> employeeCountGreaterThan(@RequestParam(defaultValue = "0") int limit) {
+		
+		return companyMapper.companiesToCompaniesDtoWithoutEmployees(companyServcie.employeeCountGreaterThan(limit));
+	}
+	
+	@GetMapping("/averageSalaryPerPosition")
+	public Collection<CompanyDto> averageSalaryPerPosition(@RequestParam(defaultValue = "0") int companyId) {
+		
+		return companyMapper.companiesToCompaniesDto(companyServcie.averageSalaryPerPosition(companyId));
+	}
+	
+	
 	
 	@PutMapping("/{id}")
 	public ResponseEntity<CompanyDto> modifyCompany(@RequestBody CompanyDto companyDto, @PathVariable Long id) {

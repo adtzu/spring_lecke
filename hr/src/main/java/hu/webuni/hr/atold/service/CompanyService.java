@@ -1,100 +1,115 @@
 package hu.webuni.hr.atold.service;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import hu.webuni.hr.atold.mapper.CompanyMapper;
 import hu.webuni.hr.atold.model.Company;
 import hu.webuni.hr.atold.model.Employee;
+import hu.webuni.hr.atold.repository.CompanyRepository;
+import hu.webuni.hr.atold.repository.EmployeeRepository;
 
 @Service
 public class CompanyService {
 	
-	private Map<Long, Company> companies = new HashMap<>();
-
-	public Collection<Company> getAllComanies() {
-		
-		return companies.values();
-	}
+	@Autowired
+	CompanyRepository companyRepository;
 	
+	@Autowired
+	EmployeeRepository employeeRepository;
+	
+	@Autowired
+	CompanyMapper companyMapper;
+	
+
+	public Collection<Company> getAllCompanies() {
+		
+		return companyRepository.findAll();
+	}
 	
 	public Collection<Company> getAllCompaniesWithoutEmployees() {
 		
-		Map<Long, Company> companies2 = companies.entrySet().stream().collect(Collectors.toMap(k -> (Long)k.getKey(), v -> {v.getValue().setEmployeeList(null); return (Company)v;}));
-		return companies2.values();
+		return companyRepository.findAll();
 	}
-	
 	
 	public Company getCompanyById(long id) {
 		
-		if(companies.containsKey(id))
-		{
-			return companies.get(id);
-		}
-		else
-		{
-			return null;
-		}
+		return companyRepository.getById(id);
 	}
 	
 	
 	public Company overwriteCompany(long id, Company comp) {
 		
-		if(companies.containsKey(id))
-		{
-			return null;
-		}
-
-		companies.put(id, comp);
-		return comp;
+		return this.saveCompany(id, comp);
 	}
 	
 	
 	public Company saveCompany(long id, Company comp) {
 		
-		companies.put(id, comp);
-		return comp;
+		comp.setId(id);
+		companyRepository.save(comp);
+		return companyRepository.getById(id);
 	}
 	
 	
 	public void deleteCompany(long id) {
-		companies.remove(id);
-	}
 	
+		companyRepository.deleteById(id);
+	}
 	
 	public Company editEmployee(long id, Employee employee) {
 		
-		List<Employee> currentEmployees = companies.get(id).getEmployeeList();
-		currentEmployees.add(employee);
-		companies.get(id).setEmployeeList(currentEmployees);
+		Company company = companyRepository.findById(id).get();
+		company.addEmployee(employee);
 		
-		return companies.get(id);
+		employeeRepository.save(employee);
+		return company;
 	}
 	
 	public Company removeEmployee(long id, long employeeId) {
 		
-		if(!companies.containsKey(id))
-		{
-			return null;
-		}
+		Company company = companyRepository.findById(id).get();
+		Employee employee = employeeRepository.findById(employeeId).get();
+		employee.setCompany(null);
+		company.getEmployeeList().remove(employee);
 		
-		companies.get(id).getEmployeeList().removeIf(e -> (e.getId() == employeeId));
-		return companies.get(id);
+		employeeRepository.save(employee);
+		companyRepository.save(company);
+		
+		return company;
 	}
 	
 	public Company editEmployeeList(List<Employee> employeeList, long id) {
 		
-		if(!companies.containsKey(id))
-		{
-			return null;
+		Company company = companyRepository.findById(id).get();
+		
+		company.getEmployeeList().forEach(a -> a.setCompany(null));
+		company.getEmployeeList().clear();
+		
+		for (Employee employee : employeeList) 
+		{	
+			company.addEmployee(employee);
+			employeeRepository.save(employee);
 		}
 		
-		companies.get(id).setEmployeeList(employeeList);
-		return companies.get(id);		
+		return company;
+	}
+	
+	public Collection<Company> employeeHasHigherSalaryThan(int salary) {
+		
+		return companyRepository.findBySalaryGreaterThanEqual(salary);
+	}
+	
+	public Collection<Company> employeeCountGreaterThan(int limit) {
+		
+		return companyRepository.findByEmployeeCountGreaterThan(limit);
+	}
+	
+	public Collection<Company> averageSalaryPerPosition(int companyId) {
+		
+		return companyRepository.averageSalaryByPosition(companyId);
 	}
 	
 }

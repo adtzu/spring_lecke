@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import hu.webuni.hr.atold.dto.EmployeeDto;
+import hu.webuni.hr.atold.model.Position;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class EmployeeControllerIT {
@@ -24,7 +25,8 @@ public class EmployeeControllerIT {
 	@Test
 	void newEmployeeListed() throws Exception {
 		
-		EmployeeDto emp = new EmployeeDto(50, "Integrációs Imi", "Gyakornok", 30000, LocalDateTime.parse("2022-01-03T08:00:00"));
+		Position pos = new Position("Gyakornok", 200000);
+		EmployeeDto emp = new EmployeeDto(50, "Integrációs Imi", pos, 30000, LocalDateTime.parse("2022-01-03T08:00:00"), null);
 		
 		
 		List<EmployeeDto> employeesBefore = getEmployees();
@@ -39,7 +41,8 @@ public class EmployeeControllerIT {
 	@Test
 	void newInvalidEmployee() throws Exception {
 		
-		EmployeeDto emp = new EmployeeDto(51, "", "", 30000, LocalDateTime.parse("2022-01-03T08:00:00"));
+		Position pos = new Position("Gyakornok", 200000);
+		EmployeeDto emp = new EmployeeDto(51, "", pos, 30000, LocalDateTime.parse("2022-01-03T08:00:00"), null);
 		
 		
 		List<EmployeeDto> employeesBefore = getEmployees();
@@ -54,7 +57,8 @@ public class EmployeeControllerIT {
 	@Test
 	void overwriteEmployee() throws Exception {
 		
-		EmployeeDto emp = new EmployeeDto(1, "Integrációs Imi", "Gyakornok", 30000, LocalDateTime.parse("2022-01-03T08:00:00"));
+		Position pos = new Position("Gyakornok", 200000);
+		EmployeeDto emp = new EmployeeDto(1, "Integrációs Imi", pos, 30000, LocalDateTime.parse("2022-01-03T08:00:00"), null);
 		
 		
 		List<EmployeeDto> employeesBefore = getEmployees();
@@ -71,7 +75,8 @@ public class EmployeeControllerIT {
 	@Test
 	void overwriteWithInvalidEmployee() throws Exception {
 		
-		EmployeeDto emp = new EmployeeDto(1, "", "", 30000, LocalDateTime.parse("2022-01-03T08:00:00"));
+		Position pos = new Position("Gyakornok", 200000);
+		EmployeeDto emp = new EmployeeDto(1, "", pos, 30000, LocalDateTime.parse("2022-01-03T08:00:00"), null);
 		
 		List<EmployeeDto> employeesBefore = getEmployees();
 		overwriteExistingWithInvalidEmployee(emp);

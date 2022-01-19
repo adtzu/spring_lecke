@@ -8,15 +8,14 @@ import javax.validation.constraints.Positive;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import hu.webuni.hr.atold.model.Position;
+
 public class EmployeeDto {
 	
 	private long id;
 	
 	@NotEmpty
 	private String name;
-	
-	@NotEmpty
-	private String position;
 	
 	@Positive
 	private int salary;
@@ -25,13 +24,28 @@ public class EmployeeDto {
 	@Past
 	private LocalDateTime enterance;
 	
-	public EmployeeDto(long id, String name, String position, int salary, LocalDateTime enterance) {
+	private CompanyDto company;
+	
+	
+	private Position position;
+	
+	public EmployeeDto() {
+		
+	}
+
+	
+	public EmployeeDto(long id, @NotEmpty String name, @NotEmpty Position position, @Positive int salary,
+			@Past LocalDateTime enterance, CompanyDto company) {
+		super();
 		this.id = id;
 		this.name = name;
 		this.position = position;
 		this.salary = salary;
 		this.enterance = enterance;
+		this.company = company;
 	}
+
+	
 
 	public long getId() {
 		return id;
@@ -49,11 +63,11 @@ public class EmployeeDto {
 		this.name = name;
 	}
 
-	public String getPosition() {
+	public Position getPosition() {
 		return position;
 	}
 
-	public void setPosition(String position) {
+	public void setPosition(Position position) {
 		this.position = position;
 	}
 
@@ -71,5 +85,13 @@ public class EmployeeDto {
 
 	public void setEnterance(LocalDateTime enterance) {
 		this.enterance = enterance;
+	}
+
+	public CompanyDto getCompany() {
+		return company;
+	}
+
+	public void setCompany(CompanyDto company) {
+		this.company = company;
 	}
 }
