@@ -98,6 +98,12 @@ public class EmployeeRestController {
 		return employeeMapper.employeeToDto(employeeServcie.addNewEmployee(employeeMapper.dtoToEmployee(employeeDto)));
 	}
 	
+	@PostMapping("/searchByexample")
+	public Collection<EmployeeDto> findEmployeeByExample(@RequestBody EmployeeDto employeeDto) {
+		
+		return employeeMapper.employeeDtoListToEmployeeList(employeeServcie.findEmployeeByExample(employeeMapper.dtoToEmployee(employeeDto)));
+	}
+	
 	@PutMapping("/{id}")
 	public ResponseEntity<EmployeeDto> modifyEmployee(@RequestBody @Valid EmployeeDto employeeDto, @PathVariable Long id) {
 		

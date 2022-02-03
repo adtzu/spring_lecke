@@ -6,9 +6,17 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+@NamedEntityGraph(name = "Company.full", 
+attributeNodes = {
+	@NamedAttributeNode(value = "employeeList", subgraph = "employeesGraph") },
+	subgraphs = { @NamedSubgraph(name = "employeesGraph", attributeNodes = @NamedAttributeNode("position")) 
+})
 @Entity
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Company {

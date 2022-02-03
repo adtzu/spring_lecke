@@ -32,7 +32,8 @@ public class InitDbService {
 	public void clearDb( ) {
 		
 		employeeRepository.deleteAll();
-		companyRepository.deleteAll();	
+		companyRepository.deleteAll();
+		positionRepository.deleteAll();
 	}
 	
 	public void insertTestData() {

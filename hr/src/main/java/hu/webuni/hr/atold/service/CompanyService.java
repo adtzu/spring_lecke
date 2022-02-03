@@ -2,6 +2,9 @@ package hu.webuni.hr.atold.service;
 
 import java.util.Collection;
 import java.util.List;
+
+import org.springframework.transaction.annotation.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,42 +26,45 @@ public class CompanyService {
 	@Autowired
 	CompanyMapper companyMapper;
 	
-
+	
 	public Collection<Company> getAllCompanies() {
 		
-		return companyRepository.findAll();
+		return companyRepository.findAllWithEmployees();
 	}
+	
 	
 	public Collection<Company> getAllCompaniesWithoutEmployees() {
 		
 		return companyRepository.findAll();
 	}
 	
+	
 	public Company getCompanyById(long id) {
 		
-		return companyRepository.getById(id);
+		return companyRepository.findOneWithEmployees(id);
 	}
 	
-	
+	@Transactional
 	public Company overwriteCompany(long id, Company comp) {
 		
 		return this.saveCompany(id, comp);
 	}
 	
-	
+	@Transactional
 	public Company saveCompany(long id, Company comp) {
 		
 		comp.setId(id);
 		companyRepository.save(comp);
-		return companyRepository.getById(id);
+		return comp;
 	}
 	
-	
+	@Transactional
 	public void deleteCompany(long id) {
 	
 		companyRepository.deleteById(id);
 	}
 	
+	@Transactional
 	public Company editEmployee(long id, Employee employee) {
 		
 		Company company = companyRepository.findById(id).get();
@@ -68,6 +74,7 @@ public class CompanyService {
 		return company;
 	}
 	
+	@Transactional
 	public Company removeEmployee(long id, long employeeId) {
 		
 		Company company = companyRepository.findById(id).get();
@@ -81,6 +88,7 @@ public class CompanyService {
 		return company;
 	}
 	
+	@Transactional
 	public Company editEmployeeList(List<Employee> employeeList, long id) {
 		
 		Company company = companyRepository.findById(id).get();
@@ -97,15 +105,18 @@ public class CompanyService {
 		return company;
 	}
 	
+	
 	public Collection<Company> employeeHasHigherSalaryThan(int salary) {
 		
 		return companyRepository.findBySalaryGreaterThanEqual(salary);
 	}
 	
+	
 	public Collection<Company> employeeCountGreaterThan(int limit) {
 		
 		return companyRepository.findByEmployeeCountGreaterThan(limit);
 	}
+	
 	
 	public Collection<Company> averageSalaryPerPosition(int companyId) {
 		
