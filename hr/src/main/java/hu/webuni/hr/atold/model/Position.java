@@ -12,7 +12,7 @@ public class Position {
 	private long id;
 	
 	private String name;
-	private enum education {
+	public enum education {
 		
 		érettségi,
 		főiskola,
