@@ -6,18 +6,22 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import hu.webuni.hr.atold.dto.CompanyDto;
 import hu.webuni.hr.atold.dto.EmployeeDto;
 import hu.webuni.hr.atold.mapper.CompanyMapper;
 import hu.webuni.hr.atold.mapper.EmployeeMapper;
+import hu.webuni.hr.atold.model.Employee;
 import hu.webuni.hr.atold.model.Position;
+import hu.webuni.hr.atold.repository.EmployeeRepository;
 import hu.webuni.hr.atold.repository.PositionRepository;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -45,13 +49,35 @@ public class CompanyControllerIT {
 	EmployeeMapper employeeMapper;
 	
 	@Autowired
+	EmployeeRepository employeeRepository;
+	
+	@Autowired
 	InitDbService initDb;
+	
+	@Autowired
+	PasswordEncoder passwordEncoder;
+	
+	
+	private String user = "user";
+	private String pass = "pass";
+	
+	
+	@BeforeEach
+	public void initDb() {
+		
+		if(employeeRepository.findByUsername(user).isEmpty())
+		{
+			Employee emp = new Employee();
+			emp.setUsername(user);
+			emp.setPassword(passwordEncoder.encode(pass));
+			
+			employeeRepository.save(emp);
+		}
+	}
 	
 	
 	@Test
 	void addEmployeeToCompany() throws Exception {
-		
-		initDb.clearDb();
 		
 		CompanyDto comp = new CompanyDto("111111", "Teszt cég", "Teszt 1 utca", null);
 		CompanyDto compSaved = saveCompany(comp);
@@ -67,13 +93,13 @@ public class CompanyControllerIT {
 		addEmployee(compSaved, employee);
 		CompanyDto compSaved2 = getCompany(compSaved);
 		
-		assertThat(compSaved2.getEmployeeList().contains(employee));	
+		assertThat(compSaved2.getEmployeeList().contains(employee));
+		
+		initDb.clearDb();
 	}
 	
 	@Test
 	void overwriteEmployeeOfCompany() throws Exception {
-		
-		initDb.clearDb();
 		
 		CompanyDto comp = new CompanyDto("111111", "Teszt cég", "Teszt 1 utca", null);
 		CompanyDto compSaved = saveCompany(comp);
@@ -95,12 +121,12 @@ public class CompanyControllerIT {
 		compSaved2 = getCompany(compSaved);
 		assertThat(compSaved2.getEmployeeList().contains(employee));
 		
+		initDb.clearDb();
+		
 	}
 	
 	@Test
 	void deleteEmployeeFromCompany() throws Exception {
-	
-		initDb.clearDb();
 		
 		CompanyDto comp = new CompanyDto("111111", "Teszt cég", "Teszt 1 utca", null);
 		CompanyDto compSaved = saveCompany(comp);
@@ -120,6 +146,8 @@ public class CompanyControllerIT {
 		
 		compSaved2 = deleteEmployee(compSaved2, savedEmp);
 		assertThat(compSaved2.getEmployeeList() == null);
+	
+		initDb.clearDb();
 		
 	}
 	
@@ -128,6 +156,7 @@ public class CompanyControllerIT {
 		webTestClient
 			.post()
 			.uri("/api/employees")
+			.headers(headers -> headers.setBasicAuth(user, pass))
 			.bodyValue(employee)
 			.exchange()
 			.expectStatus()
@@ -140,6 +169,7 @@ public class CompanyControllerIT {
 		return webTestClient
 					.delete()
 					.uri(BASE_URI + "/"+company.getId()+"/employeeEdit/"+employee.getId())
+					.headers(headers -> headers.setBasicAuth(user, pass))
 					.exchange()
 					.expectStatus()
 					.isOk()
@@ -153,6 +183,7 @@ public class CompanyControllerIT {
 		return webTestClient
 					.get()
 					.uri(BASE_URI + "/" + comp.getId())
+					.headers(headers -> headers.setBasicAuth(user, pass))
 					.exchange()
 					.expectStatus()
 					.isOk()
@@ -167,6 +198,7 @@ public class CompanyControllerIT {
 		return webTestClient
 					.post()
 					.uri(BASE_URI + "/0")
+					.headers(headers -> headers.setBasicAuth(user, pass))
 					.bodyValue(comp)
 					.exchange()
 					.expectBody(CompanyDto.class)
@@ -183,6 +215,7 @@ public class CompanyControllerIT {
 		return webTestClient
 				.post()
 				.uri(BASE_URI + "/" + comp.getId() + "/employeeEdit")
+				.headers(headers -> headers.setBasicAuth(user, pass))
 				.bodyValue(em)
 				.exchange()
 				.expectBody(CompanyDto.class)
@@ -199,6 +232,7 @@ public class CompanyControllerIT {
 		return webTestClient
 				.put()
 				.uri(BASE_URI + "/" + comp.getId() + "/employeeEdit")
+				.headers(headers -> headers.setBasicAuth(user, pass))
 				.bodyValue(em)
 				.exchange()
 				.expectBody(CompanyDto.class)

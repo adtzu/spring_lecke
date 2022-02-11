@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -46,18 +47,21 @@ public class DayOffController {
 	}
 	
 	@GetMapping("/approve/{dayOffId}/{approverId}")
+	@PreAuthorize("#dayOff.approver.id == authentication.principal.employee.Id")
 	public DayOffDto approve(@PathVariable long dayOffId, @PathVariable long approverId) {
 		
 		return dayOffMapper.modelToDto(dayOffService.approveDayOff(dayOffId, approverId));
 	}
 	
 	@PostMapping("/{employeeId}")
+	@PreAuthorize("#dayOff.applicant.id == authentication.principal.employee.Id")
 	public DayOffDto addNew(@RequestBody DayOffDto dayOff, @PathVariable long employeeId) {
 		
 		return dayOffMapper.modelToDto((dayOffService.addNew(employeeId, dayOffMapper.dayOffDtoTomodel(dayOff))));
 	}
 	
 	@DeleteMapping("/{dayOffId}")
+	@PreAuthorize("#dayOff.applicant.id == authentication.principal.employee.Id")
 	public void deleteDayOff(@PathVariable long dayOffId) {
 		
 		dayOffService.delete(dayOffId);

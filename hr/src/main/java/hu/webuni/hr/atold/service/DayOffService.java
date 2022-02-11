@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,6 +62,11 @@ public class DayOffService {
 		
 		DayOff toApprove = dayOffRepository.getById(id);
 		Employee approver = employeeRepository.getById(approverId);
+		
+		if(toApprove.getApplicant().getManager().getId() == approver.getId())
+		{
+			throw new AccessDeniedException("Not the ,anager of this user");
+		}
 		
 		toApprove.setStatus("approved");
 		toApprove.setApprover(approver);

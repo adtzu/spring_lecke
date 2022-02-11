@@ -6,6 +6,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Past;
+import javax.validation.constraints.Positive;
+
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
@@ -15,24 +19,34 @@ public class Employee {
 	@GeneratedValue
 	private long id;
 	
+	@NotEmpty
 	private String name;
+	
+	private String username;
+	private String password;
 	
 	@ManyToOne
 	private Position position;
+	
+	@Positive
 	private int salary;
 	
+	@Past
 	@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
 	private LocalDateTime enterance;
 	
 	@ManyToOne
 	private Company company;
 	
+	@ManyToOne
+	private Employee manager;
+	
 	
 	public Employee() {
 		
 	}
 
-	public Employee(String name, int salary, LocalDateTime enterance, Company company) {
+	public Employee(@NotEmpty String name, @Positive int salary, @Past LocalDateTime enterance, Company company) {
 
 		this.name = name;
 		this.salary = salary;
@@ -78,7 +92,29 @@ public class Employee {
 	public void setCompany(Company company) {
 		this.company = company;
 	}
-	
-	
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public Employee getManager() {
+		return manager;
+	}
+
+	public void setManager(Employee manager) {
+		this.manager = manager;
+	}
 	
 }

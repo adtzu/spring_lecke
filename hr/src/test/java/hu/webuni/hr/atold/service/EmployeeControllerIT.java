@@ -5,28 +5,60 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import hu.webuni.hr.atold.dto.EmployeeDto;
+import hu.webuni.hr.atold.model.Employee;
 import hu.webuni.hr.atold.model.Position;
+import hu.webuni.hr.atold.repository.EmployeeRepository;
+import hu.webuni.hr.atold.repository.PositionRepository;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@AutoConfigureTestDatabase
 public class EmployeeControllerIT {
 	
 	private static final String BASE_URI = "/api/employees";
 	
 	@Autowired
 	WebTestClient webTestClient;
+	
+	@Autowired
+	EmployeeRepository employeeRepository;
+	
+	@Autowired
+	PositionRepository positionRepository;
+	
+	@Autowired
+	PasswordEncoder passwordEncoder;
+	
+	private String user = "user";
+	private String pass = "pass";
 
+	@BeforeEach
+	public void initDb() {
+		
+		if(employeeRepository.findByUsername(user).isEmpty())
+		{
+			Employee emp = new Employee();
+			emp.setUsername(user);
+			emp.setPassword(passwordEncoder.encode(pass));
+			
+			employeeRepository.save(emp);
+		}
+	}
 	
 	@Test
 	void newEmployeeListed() throws Exception {
 		
 		Position pos = new Position("Gyakornok", 200000);
+		positionRepository.save(pos);
 		EmployeeDto emp = new EmployeeDto(50, "Integrációs Imi", pos, 30000, LocalDateTime.parse("2022-01-03T08:00:00"), null);
 		
 		
@@ -43,15 +75,16 @@ public class EmployeeControllerIT {
 	void newInvalidEmployee() throws Exception {
 		
 		Position pos = new Position("Gyakornok", 200000);
-		EmployeeDto emp = new EmployeeDto(51, "", pos, 30000, LocalDateTime.parse("2022-01-03T08:00:00"), null);
+		positionRepository.save(pos);
 		
+		EmployeeDto empInvalid = new EmployeeDto(1, "", pos, -10, LocalDateTime.parse("2023-01-03T08:00:00"), null);		
 		
 		List<EmployeeDto> employeesBefore = getEmployees();
-		createInvalidEmployee(emp);
+		createInvalidEmployee(empInvalid);
 		List<EmployeeDto> employeesAfter = getEmployees();
 		
-		assertThat(!employeesBefore.contains(emp));
-		assertThat(!employeesAfter.contains(emp));
+		assertThat(!employeesBefore.contains(empInvalid));
+		assertThat(!employeesAfter.contains(empInvalid));
 		
 	}
 	
@@ -59,6 +92,7 @@ public class EmployeeControllerIT {
 	void overwriteEmployee() throws Exception {
 		
 		Position pos = new Position("Gyakornok", 200000);
+		positionRepository.save(pos);
 		EmployeeDto emp = new EmployeeDto(1, "Integrációs Imi", pos, 30000, LocalDateTime.parse("2022-01-03T08:00:00"), null);
 		
 		
@@ -77,12 +111,17 @@ public class EmployeeControllerIT {
 	void overwriteWithInvalidEmployee() throws Exception {
 		
 		Position pos = new Position("Gyakornok", 200000);
-		EmployeeDto emp = new EmployeeDto(1, "", pos, 30000, LocalDateTime.parse("2022-01-03T08:00:00"), null);
+		positionRepository.save(pos);
+		EmployeeDto emp = new EmployeeDto(1, "Integrációs Imi", pos, 30000, LocalDateTime.parse("2022-01-03T08:00:00"), null);
+		EmployeeDto saved = createNewEmployee(emp);
+		
+		EmployeeDto empInvalid = new EmployeeDto(1, "", pos, 30000, LocalDateTime.parse("2022-01-03T08:00:00"), null);
+		empInvalid.setId(saved.getId());
 		
 		List<EmployeeDto> employeesBefore = getEmployees();
-		overwriteExistingWithInvalidEmployee(emp);
+		overwriteExistingWithInvalidEmployee(empInvalid);
 		
-		assertThat(!employeesBefore.contains(emp));
+		assertThat(!employeesBefore.contains(empInvalid));
 		
 	}
 	
@@ -91,6 +130,7 @@ public class EmployeeControllerIT {
 		webTestClient
 			.post()
 			.uri(BASE_URI)
+			.headers(headers -> headers.setBasicAuth(user, pass))
 			.bodyValue(newEmployee)
 			.exchange()
 			.expectStatus()
@@ -98,15 +138,19 @@ public class EmployeeControllerIT {
 			
 	}
 
-	private void createNewEmployee(EmployeeDto newEmployee) {
+	private EmployeeDto createNewEmployee(EmployeeDto newEmployee) {
 		
-		webTestClient
+		return webTestClient
 			.post()
 			.uri(BASE_URI)
+			.headers(headers -> headers.setBasicAuth(user, pass))
 			.bodyValue(newEmployee)
 			.exchange()
 			.expectStatus()
-			.isOk();	
+			.isOk()
+			.expectBody(EmployeeDto.class)
+			.returnResult()
+			.getResponseBody();
 		
 	}
 	
@@ -115,6 +159,7 @@ public class EmployeeControllerIT {
 		return webTestClient
 					.put()
 					.uri(BASE_URI + "/" + newEmployee.getId())
+					.headers(headers -> headers.setBasicAuth(user, pass))
 					.bodyValue(newEmployee)
 					.exchange()
 					.expectStatus()
@@ -129,6 +174,7 @@ public class EmployeeControllerIT {
 		webTestClient
 			.put()
 			.uri(BASE_URI + "/" + newEmployee.getId())
+			.headers(headers -> headers.setBasicAuth(user, pass))
 			.bodyValue(newEmployee)
 			.exchange()
 			.expectStatus()
@@ -140,6 +186,7 @@ public class EmployeeControllerIT {
 		return webTestClient
 					.get()
 					.uri(BASE_URI)
+					.headers(headers -> headers.setBasicAuth(user, pass))
 					.exchange()
 					.expectStatus()
 					.isOk()

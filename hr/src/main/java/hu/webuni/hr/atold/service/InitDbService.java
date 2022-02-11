@@ -2,6 +2,7 @@ package hu.webuni.hr.atold.service;
 
 import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import hu.webuni.hr.atold.model.Company;
@@ -27,6 +28,9 @@ public class InitDbService {
 	
 	@Autowired
 	PositionRepository positionRepository;
+	
+	@Autowired
+	PasswordEncoder passwordEncoder;
 
 	
 	public void clearDb( ) {
@@ -46,6 +50,8 @@ public class InitDbService {
 		
 		Company comp = new Company("1234qwe", "Tesztelek és társa Kft.", "Teszt város teszt utca 1/b", null);
 		Employee emp = new Employee("Teszt Elek", 1000, LocalDateTime.parse("2021-11-29T08:00:00"), null);
+		emp.setUsername("user");
+		emp.setPassword(passwordEncoder.encode("user"));
 		emp.setPosition(position);
 		
 		comp.addEmployee(emp);

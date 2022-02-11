@@ -95,7 +95,9 @@ public class EmployeeRestController {
 	@PostMapping
 	public EmployeeDto createEmployee(@RequestBody @Valid EmployeeDto employeeDto) {
 		
-		return employeeMapper.employeeToDto(employeeServcie.addNewEmployee(employeeMapper.dtoToEmployee(employeeDto)));
+		return employeeMapper.employeeToDto(
+				employeeServcie.addNewEmployee(
+						employeeMapper.dtoToEmployee(employeeDto)));
 	}
 	
 	@PostMapping("/searchByexample")
