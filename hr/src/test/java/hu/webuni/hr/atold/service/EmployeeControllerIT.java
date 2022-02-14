@@ -1,7 +1,6 @@
 package hu.webuni.hr.atold.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -130,7 +129,7 @@ public class EmployeeControllerIT {
 		webTestClient
 			.post()
 			.uri(BASE_URI)
-			.headers(headers -> headers.setBasicAuth(user, pass))
+			.headers(headers -> headers.setBearerAuth(BASE_URI))
 			.bodyValue(newEmployee)
 			.exchange()
 			.expectStatus()
