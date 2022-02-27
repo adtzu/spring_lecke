@@ -14,16 +14,19 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import hu.webuni.hr.atold.dto.EmployeeDto;
+import hu.webuni.hr.atold.dto.LoginDto;
 import hu.webuni.hr.atold.model.Employee;
 import hu.webuni.hr.atold.model.Position;
 import hu.webuni.hr.atold.repository.EmployeeRepository;
 import hu.webuni.hr.atold.repository.PositionRepository;
+
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase
 public class EmployeeControllerIT {
 	
 	private static final String BASE_URI = "/api/employees";
+	private static final String LOGIN = "/api/login";
 	
 	@Autowired
 	WebTestClient webTestClient;
@@ -125,11 +128,14 @@ public class EmployeeControllerIT {
 	}
 	
 	private void createInvalidEmployee(EmployeeDto newEmployee) {
-			
+		
+		
+		String token = getJwtToken();
+		
 		webTestClient
 			.post()
 			.uri(BASE_URI)
-			.headers(headers -> headers.setBearerAuth(BASE_URI))
+			.headers(headers -> headers.setBearerAuth(token))
 			.bodyValue(newEmployee)
 			.exchange()
 			.expectStatus()
@@ -139,10 +145,13 @@ public class EmployeeControllerIT {
 
 	private EmployeeDto createNewEmployee(EmployeeDto newEmployee) {
 		
+		
+		String token = getJwtToken();
+		
 		return webTestClient
 			.post()
 			.uri(BASE_URI)
-			.headers(headers -> headers.setBasicAuth(user, pass))
+			.headers(headers -> headers.setBearerAuth(token))
 			.bodyValue(newEmployee)
 			.exchange()
 			.expectStatus()
@@ -155,10 +164,12 @@ public class EmployeeControllerIT {
 	
 	private EmployeeDto overwriteExistingEmployee(EmployeeDto newEmployee) {
 		
+		String token = getJwtToken();
+		
 		return webTestClient
 					.put()
 					.uri(BASE_URI + "/" + newEmployee.getId())
-					.headers(headers -> headers.setBasicAuth(user, pass))
+					.headers(headers -> headers.setBearerAuth(token))
 					.bodyValue(newEmployee)
 					.exchange()
 					.expectStatus()
@@ -170,10 +181,12 @@ public class EmployeeControllerIT {
 	
 	private void overwriteExistingWithInvalidEmployee(EmployeeDto newEmployee) {
 		
+		String token = getJwtToken();
+		
 		webTestClient
 			.put()
 			.uri(BASE_URI + "/" + newEmployee.getId())
-			.headers(headers -> headers.setBasicAuth(user, pass))
+			.headers(headers -> headers.setBearerAuth(token))
 			.bodyValue(newEmployee)
 			.exchange()
 			.expectStatus()
@@ -182,16 +195,35 @@ public class EmployeeControllerIT {
 
 	private List<EmployeeDto> getEmployees() {
 		
+		String token = getJwtToken();
+		
 		return webTestClient
 					.get()
 					.uri(BASE_URI)
-					.headers(headers -> headers.setBasicAuth(user, pass))
+					.headers(headers -> headers.setBearerAuth(token))
 					.exchange()
 					.expectStatus()
 					.isOk()
 					.expectBodyList(EmployeeDto.class)
 					.returnResult()
 					.getResponseBody();
+	}
+	
+	String getJwtToken() {
+		
+		LoginDto login = new LoginDto("user", "pass");
+		
+		return webTestClient
+				.post()
+				.uri(LOGIN)
+				.bodyValue(login)
+				.exchange()
+				.expectStatus()
+				.isOk()
+				.expectBody(String.class)
+				.returnResult()
+				.getResponseBody();
+				
 	}
 	
 }

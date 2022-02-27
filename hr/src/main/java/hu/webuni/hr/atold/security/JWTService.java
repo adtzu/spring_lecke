@@ -40,7 +40,7 @@ public class JWTService {
 	@Autowired
 	private ConfigProperties config;
 
-	@PostConstruct
+	/*@PostConstruct
 	public void init() {
 		this.issuer = config.getJwt().getIssuer();
 		try {
@@ -51,7 +51,7 @@ public class JWTService {
 			e.printStackTrace();
 		}
 
-	}
+	}*/
 
 	public String creatJwtToken(UserDetails principal) {
 		Builder jwtBuilder = JWT.create().withSubject(principal.getUsername()).withArrayClaim(AUTH,

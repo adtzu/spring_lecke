@@ -17,6 +17,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 import hu.webuni.hr.atold.dto.CompanyDto;
 import hu.webuni.hr.atold.dto.EmployeeDto;
+import hu.webuni.hr.atold.dto.LoginDto;
 import hu.webuni.hr.atold.mapper.CompanyMapper;
 import hu.webuni.hr.atold.mapper.EmployeeMapper;
 import hu.webuni.hr.atold.model.Employee;
@@ -29,6 +30,7 @@ import hu.webuni.hr.atold.repository.PositionRepository;
 public class CompanyControllerIT {
 	
 	private static final String BASE_URI = "/api/companies";
+	private static final String LOGIN = "/api/login";
 	
 	@Autowired
 	WebTestClient webTestClient;
@@ -152,11 +154,13 @@ public class CompanyControllerIT {
 	}
 	
 	private void saveEmployee(EmployeeDto employee) {
+		
+		String token = getJwtToken();
 
 		webTestClient
 			.post()
 			.uri("/api/employees")
-			.headers(headers -> headers.setBasicAuth(user, pass))
+			.headers(headers -> headers.setBearerAuth(token))
 			.bodyValue(employee)
 			.exchange()
 			.expectStatus()
@@ -166,10 +170,12 @@ public class CompanyControllerIT {
 	
 	private CompanyDto deleteEmployee(CompanyDto company, EmployeeDto employee) {
 		
+		String token = getJwtToken();
+		
 		return webTestClient
 					.delete()
 					.uri(BASE_URI + "/"+company.getId()+"/employeeEdit/"+employee.getId())
-					.headers(headers -> headers.setBasicAuth(user, pass))
+					.headers(headers -> headers.setBearerAuth(token))
 					.exchange()
 					.expectStatus()
 					.isOk()
@@ -180,10 +186,12 @@ public class CompanyControllerIT {
 
 	private CompanyDto getCompany(CompanyDto comp) {
 		
+		String token = getJwtToken();
+		
 		return webTestClient
 					.get()
 					.uri(BASE_URI + "/" + comp.getId())
-					.headers(headers -> headers.setBasicAuth(user, pass))
+					.headers(headers -> headers.setBearerAuth(token))
 					.exchange()
 					.expectStatus()
 					.isOk()
@@ -195,10 +203,12 @@ public class CompanyControllerIT {
 	
 	private CompanyDto saveCompany(CompanyDto comp) {
 		
+		String token = getJwtToken();
+		
 		return webTestClient
 					.post()
 					.uri(BASE_URI + "/0")
-					.headers(headers -> headers.setBasicAuth(user, pass))
+					.headers(headers -> headers.setBearerAuth(token))
 					.bodyValue(comp)
 					.exchange()
 					.expectBody(CompanyDto.class)
@@ -209,13 +219,16 @@ public class CompanyControllerIT {
 	
 	private CompanyDto addEmployee(CompanyDto comp, EmployeeDto emp) {
 		
+		
+		String token = getJwtToken();
+		
 		List<EmployeeDto> em = new ArrayList<EmployeeDto>();
 		em.add(emp);
 		
 		return webTestClient
 				.post()
 				.uri(BASE_URI + "/" + comp.getId() + "/employeeEdit")
-				.headers(headers -> headers.setBasicAuth(user, pass))
+				.headers(headers -> headers.setBearerAuth(token))
 				.bodyValue(em)
 				.exchange()
 				.expectBody(CompanyDto.class)
@@ -226,19 +239,38 @@ public class CompanyControllerIT {
 	
 	private CompanyDto overtwriteEmployee(CompanyDto comp, EmployeeDto emp) {
 		
+		String token = getJwtToken();
+		
 		List<EmployeeDto> em = new ArrayList<EmployeeDto>();
 		em.add(emp);
 		
 		return webTestClient
 				.put()
 				.uri(BASE_URI + "/" + comp.getId() + "/employeeEdit")
-				.headers(headers -> headers.setBasicAuth(user, pass))
+				.headers(headers -> headers.setBearerAuth(token))
 				.bodyValue(em)
 				.exchange()
 				.expectBody(CompanyDto.class)
 				.returnResult()
 				.getResponseBody();
 		
+	}
+	
+	String getJwtToken() {
+		
+		LoginDto login = new LoginDto("user", "pass");
+		
+		return webTestClient
+				.post()
+				.uri(LOGIN)
+				.bodyValue(login)
+				.exchange()
+				.expectStatus()
+				.isOk()
+				.expectBody(String.class)
+				.returnResult()
+				.getResponseBody();
+				
 	}
 
 }
